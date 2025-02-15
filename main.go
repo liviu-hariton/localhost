@@ -6,6 +6,7 @@ import (
 
 	"os"
 
+	"github.com/liviu-hariton/localhost/internal/config"
 	"github.com/liviu-hariton/localhost/internal/system"
 	"github.com/liviu-hariton/localhost/internal/utils"
 )
@@ -47,6 +48,12 @@ func main() {
 	// Check PHP
 	if err := system.VerifyPHP(); err != nil {
 		fmt.Printf("PHP Error: %s\n", err)
+		return
+	}
+
+	// Modify Hosts File
+	if err := config.ModifyHosts(*domain); err != nil {
+		fmt.Printf("Hosts File Error: %s\n", err)
 		return
 	}
 
