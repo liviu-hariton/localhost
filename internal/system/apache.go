@@ -51,7 +51,7 @@ func CheckApacheRunning() error {
 
 // RestartApache attempts to restart Apache if it is not running.
 func RestartApache() error {
-	cmd := exec.Command("sudo", "apachectl", "restart")
+	cmd := exec.Command("sudo", "apachectl", "-k", "restart")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out

@@ -18,14 +18,15 @@ func main() {
 		return
 	}
 
-	// Define a command-line flag for the domain name
+	// Define command-line flags
 	domain := flag.String("domain", "", "The local domain to set up (e.g., myproject.local)")
+	doc_root := flag.String("doc_root", "", "The document root for the virtual host")
 	flag.Parse()
 
-	// Ensure the domain is provided
-	if *domain == "" {
-		fmt.Println("Error: Please provide a domain name using the -domain flag. For example:")
-		fmt.Println("    go run main.go -domain=myproject.local")
+	// Ensure the domain and document root are provided
+	if *domain == "" || *doc_root == "" {
+		fmt.Println("Error: Please provide both -domain and -docRoot flags. For example:")
+		fmt.Println("    go run main.go -domain=myproject.local -doc_root=/path/on/disk/to/myproject")
 		os.Exit(1)
 	}
 
@@ -51,11 +52,37 @@ func main() {
 		return
 	}
 
+	fmt.Println("All checks passed successfully!")
+
 	// Modify Hosts File
 	if err := config.ModifyHosts(*domain); err != nil {
 		fmt.Printf("Hosts File Error: %s\n", err)
 		return
 	}
 
-	fmt.Println("All checks passed successfully!")
+	fmt.Println("Ensuring vhosts are enabled and adding virtual host...")
+
+	// Ensure vhosts are enabled
+	if err := config.EnsureVhostsEnabled(); err != nil {
+		fmt.Printf("Apache Config Error: %s\n", err)
+		return
+	}
+
+	// Add Virtual Host
+	if err := config.AddVirtualHost(*domain, *doc_root); err != nil {
+		fmt.Printf("Virtual Host Error: %s\n", err)
+		return
+	}
+
+	fmt.Println("Restarting Apache to apply changes...")
+
+	// Restart Apache to apply changes
+	if err := system.RestartApache(); err != nil {
+		fmt.Printf("Apache Restart Error: %s\n", err)
+		return
+	}
+
+	fmt.Println("All changes applied successfully!")
+
+	fmt.Printf("You should be able now to access your new project at http://%s or https://%s\n", *domain, *domain)
 }
