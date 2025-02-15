@@ -1,0 +1,105 @@
+package system
+
+import (
+	"bytes"
+	"errors"
+	"fmt"
+	"os/exec"
+	"strings"
+)
+
+// CheckMySQLInstalled verifies if MySQL is installed on the system.
+func CheckMySQLInstalled() error {
+	cmd := exec.Command("mysql", "--version")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return errors.New("MySQL is not installed or not accessible. Install it using Homebrew: 'brew install mysql'")
+	}
+
+	// MySQL is installed
+	fmt.Println("✔ MySQL is installed.")
+	return nil
+}
+
+// CheckMySQLRunning verifies if MySQL is currently running.
+func CheckMySQLRunning() error {
+	cmd := exec.Command("brew", "services", "list")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to check running services: %s", err.Error())
+	}
+
+	if strings.Contains(out.String(), "mysql") && strings.Contains(out.String(), "started") {
+		fmt.Println("✔ MySQL is running.")
+		return nil
+	}
+
+	return errors.New("MySQL is not running")
+}
+
+// InstallMySQL attempts to install MySQL using Homebrew.
+func InstallMySQL() error {
+	fmt.Println("MySQL is not installed. Attempting to install it using Homebrew...")
+
+	cmd := exec.Command("brew", "install", "mysql")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to install MySQL: %s", out.String())
+	}
+
+	fmt.Println("✔ MySQL installed successfully.")
+	return nil
+}
+
+// RestartMySQL attempts to restart MySQL using Homebrew services.
+func RestartMySQL() error {
+	cmd := exec.Command("brew", "services", "restart", "mysql")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to restart MySQL: %s", out.String())
+	}
+
+	fmt.Println("✔ MySQL restarted successfully.")
+	return nil
+}
+
+// VerifyMySQL ensures MySQL is installed, running, and starts it if needed.
+func VerifyMySQL() error {
+	fmt.Println("Checking MySQL setup...")
+
+	// Check if MySQL is installed
+	if err := CheckMySQLInstalled(); err != nil {
+		fmt.Println(err)
+
+		// Attempt to install MySQL
+		if installErr := InstallMySQL(); installErr != nil {
+			return installErr
+		}
+	}
+
+	// Check if MySQL is running
+	if err := CheckMySQLRunning(); err != nil {
+		fmt.Println("MySQL is not running. Attempting to restart...")
+		if restartErr := RestartMySQL(); restartErr != nil {
+			return fmt.Errorf("failed to restart MySQL: %s", restartErr.Error())
+		}
+	}
+
+	return nil
+}

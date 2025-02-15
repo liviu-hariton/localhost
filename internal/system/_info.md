@@ -1,0 +1,1 @@
+For system-level checks (e.g., Apache, PHP, MySQL)
