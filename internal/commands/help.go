@@ -3,7 +3,7 @@ package commands
 import "fmt"
 
 func HelpCommand(args []string) {
-	fmt.Println("Usage: main.go <command> [options]")
+	fmt.Println("Usage: localhost <command> [options]")
 	fmt.Println("Commands:")
 	fmt.Println("  create   Create a new local domain configuration")
 	fmt.Println("  list     List all configured local domains")
