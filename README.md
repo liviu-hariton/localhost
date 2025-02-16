@@ -1,3 +1,5 @@
+This project is my personal endeavor to learn and explore the Go programming language (Golang). While the tool is functional and built with care, it primarily serves as a way for me to deepen my understanding of various Go concepts and build practical skills. Read the full story in the [ABOUT](ABOUT.md) section.
+
 # LocalHost - multiple local domains on MacOS
 
 LocalHost is a utility for web developers to set up and manage multiple local domains on macOS. It's meant for those users who want to relly on vanilla tools and avoid using memory hungry tools like Docker. It automates tedious tasks like:
