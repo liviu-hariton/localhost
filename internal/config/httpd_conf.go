@@ -117,16 +117,18 @@ func AddVirtualHost(domain, documentRoot string) error {
 		fmt.Println("DRY RUN: Would write the dummy index.php file.")
 	}
 
-	// Open the file for writing
-	file, err := os.OpenFile(vhostFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		rollback(vhostFile, publicDir)
-		return utils.LogError(fmt.Sprintf("Creating vhost file '%s'", vhostFile), err)
-	}
-	defer file.Close()
+	// Write the configuration to the file
+	if !utils.IsDryRun() {
+		// Open the file for writing
+		file, err := os.OpenFile(vhostFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
+		if err != nil {
+			rollback(vhostFile, publicDir)
+			return utils.LogError(fmt.Sprintf("Creating vhost file '%s'", vhostFile), err)
+		}
+		defer file.Close()
 
-	// Virtual host configuration template
-	vhostConfig := fmt.Sprintf(`
+		// Virtual host configuration template
+		vhostConfig := fmt.Sprintf(`
 <VirtualHost %s:80>
     ServerName %s
     DocumentRoot "%s/public"
@@ -160,8 +162,6 @@ func AddVirtualHost(domain, documentRoot string) error {
 </VirtualHost>
 `, domain, domain, documentRoot, errorLogDir, accessLogDir, documentRoot, domain, domain, documentRoot, sslErrorLogDir, sslAccessLogDir, documentRoot)
 
-	// Write the configuration to the file
-	if !utils.IsDryRun() {
 		if _, err := file.WriteString(vhostConfig); err != nil {
 			rollback(vhostFile, publicDir)
 			return utils.LogError(fmt.Sprintf("Writing to vhost file '%s'", vhostFile), err)
