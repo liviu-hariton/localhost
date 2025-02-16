@@ -58,21 +58,16 @@ LocalHost is a utility for web developers to set up and manage multiple local do
 1. Go to the [Releases](https://github.com/liviu-hariton/localhost/releases) page and download the latest version.
 
 ```bash
-curl -LO https://github.com/liviu-hariton/localhost/releases/download/v1.0.0/localhost.tar.gz
+curl -LO https://github.com/liviu-hariton/localhost/releases/download/1.0.0/localhost
 ```
 
-2. Extract the binary
-
-```bash
-tar -xvzf localhost.tar.gz
-```
-3. Move the binary to `/usr/local/bin`
+2. Move the binary to `/usr/local/bin`
 
 ```bash
 sudo mv localhost /usr/local/bin/
 ```
 
-4. Verify the installation
+3. Verify the installation
 
 ```bash
 localhost --version
