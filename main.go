@@ -82,6 +82,12 @@ func main() {
 		return
 	}
 
+	// Ensure SSL Certificates
+	if err := system.EnsureSSLCertificates(); err != nil {
+		fmt.Printf("SSL Error: %s\n", err)
+		return
+	}
+
 	fmt.Println("All changes applied successfully!")
 
 	fmt.Printf("You should be able now to access your new project at http://%s or https://%s\n", *domain, *domain)
