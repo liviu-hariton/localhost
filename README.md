@@ -5,6 +5,14 @@ This project is my personal endeavor to learn and explore the Go programming lan
 
 # LocalHost - multiple local domains on MacOS
 
+[![Go Report Card](https://goreportcard.com/badge/github.com/liviu-hariton/localhost)](https://goreportcard.com/report/github.com/liviu-hariton/localhost)
+![Go Version](https://img.shields.io/github/go-mod/go-version/liviu-hariton/localhost)
+![License](https://img.shields.io/github/license/liviu-hariton/localhost)
+![Last Commit](https://img.shields.io/github/last-commit/liviu-hariton/localhost)
+![GitHub Release](https://img.shields.io/github/v/release/liviu-hariton/localhost)
+![GitHub Downloads](https://img.shields.io/github/downloads/liviu-hariton/localhost/total)
+![Platform](https://img.shields.io/badge/platform-macOS-blue)
+
 LocalHost is a utility for web developers to set up and manage multiple local domains on macOS. It's meant for those users who want to relly on vanilla tools and avoid using memory hungry tools like Docker. It automates tedious tasks like:
 * creating and loading virtual hosts files
 * modifying `/etc/hosts` file
