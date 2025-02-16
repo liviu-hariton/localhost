@@ -161,12 +161,17 @@ func AddVirtualHost(domain, documentRoot string) error {
 `, domain, domain, documentRoot, errorLogDir, accessLogDir, documentRoot, domain, domain, documentRoot, sslErrorLogDir, sslAccessLogDir, documentRoot)
 
 	// Write the configuration to the file
-	if _, err := file.WriteString(vhostConfig); err != nil {
-		rollback(vhostFile, publicDir)
-		return utils.LogError(fmt.Sprintf("Writing to vhost file '%s'", vhostFile), err)
+	if !utils.IsDryRun() {
+		if _, err := file.WriteString(vhostConfig); err != nil {
+			rollback(vhostFile, publicDir)
+			return utils.LogError(fmt.Sprintf("Writing to vhost file '%s'", vhostFile), err)
+		}
+
+		fmt.Printf("✔ Virtual host configuration for '%s' created at '%s'.\n", domain, vhostFile)
+	} else {
+		fmt.Println("DRY RUN: Would write the virtual host configuration file.")
 	}
 
-	fmt.Printf("✔ Virtual host configuration for '%s' created at '%s'.\n", domain, vhostFile)
 	return nil
 }
 
