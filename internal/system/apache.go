@@ -1,7 +1,3 @@
-/**
-* Verify that Apache is installed and running. Restart it if not running.
- */
-
 package system
 
 import (
