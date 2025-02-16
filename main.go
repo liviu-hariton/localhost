@@ -8,7 +8,14 @@ import (
 	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
+const Version = "1.0.0"
+
 func main() {
+	if utils.HasFlag("--version") {
+		fmt.Printf("LocalHost version %s\n", Version)
+		return
+	}
+
 	// Bypass sudo if dry-run mode is enabled
 	if utils.HasFlag("--dry-run") {
 		utils.LogInfo("Dry Run mode detected. Skipping privilege escalation.")
