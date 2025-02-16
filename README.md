@@ -25,12 +25,13 @@ LocalHost is a utility for web developers to set up and manage multiple local do
 * [Prerequisites](#prerequisites)
 * [Installation](#installation)
 * [Usage](#usage)
-    * [See the Help documentation](#)
-    * [Create a local domain](#)
-    * [List available local domains](#)
-    * [Remove an existing local domain](#)
-    * [Dry-Run mode](#)
+    * [See the Help documentation](#see-the-help-documentation)
+    * [Create a local domain](#create-a-local-domain)
+    * [List available local domains](#list-available-local-domains)
+    * [Remove an existing local domain](#remove-an-existing-local-domain)
+    * [Dry-Run mode](#dry-run-mode)
 * [Uninstallation](#uninstallation)
+* [Build it yourself](#build-it-yourself)
 * [License](#license)
 * [Disclaimer](#disclaimer)
 
@@ -214,6 +215,88 @@ sudo rm /usr/local/etc/httpd/extra/vhosts/myproject.local.conf
 sudo nano /etc/hosts
 ```
 Find and delete lines that reference the local domains (e.g., `127.0.0.1 myproject.local`). Save the file and exit (`:wq`) .
+
+## Build it yourself
+
+This guide will walk you through the steps to clone, build, and run the localhost utility from source. You can customize or contribute to the tool by following these instructions.
+
+Before building the tool, ensure you have the following installed:
+* Go (Golang)
+    * download and install the latest version of Go from the [official website](https://go.dev/)
+    * verify the installation with `go version`
+* Git
+    * install Git from [git-scm.com](git-scm.com)
+    * verify the installation with `git --version`
+* Xcode command line tools (macOS-specific)
+    * run this in your terminal `xcode-select --install`
+
+Next, clone the official repository to your local machine
+
+```bash
+git clone https://github.com/liviu-hariton/localhost.git
+```
+
+and navigate into the project directory
+
+```bash
+cd localhost
+```
+
+Now, you have two options:
+* build a native binary, for your current macOS architecture
+* build an universal binary that runs natively on both Apple Silicon and Intel-based Macs
+
+### Build a native binary
+
+```bash
+go build -o localhost
+```
+
+This will create a binary named `localhost` in the current directory. You can run the tool immediately:
+
+```bash
+./localhost --version
+```
+
+### Build an universal binary (for both Apple Silicon and Intel)
+
+If you want a single binary that runs natively on both Apple Silicon and Intel-based Macs, you need to build architecture-specific binaries and merge them using `lipo`
+
+First, build an ARM64 (Apple Silicon) binary:
+
+```bash
+GOOS=darwin GOARCH=arm64 go build -o localhost-arm64
+```
+
+Then, build an AMD64 (Intel) binary:
+
+```bash
+GOOS=darwin GOARCH=amd64 go build -o localhost-amd64
+```
+
+And, finally, merge them together into an universal binary:
+
+```bash
+lipo -create -output localhost localhost-arm64 localhost-amd64
+```
+
+You can check the architectures included in the universal binary you've just created by running:
+
+```bash
+lipo -info localhost
+```
+
+At this point, no matter the binary version chosen, you can make the `localhost` tool available globally, by moving it to a directory in your PATH, such as `/usr/local/bin`
+
+```bash
+sudo mv localhost /usr/local/bin/
+```
+
+Now you can test it by running:
+
+```bash
+localhost --version
+```
 
 ### License
 This library is licensed under the MIT License. See the [LICENSE](LICENSE.md) file for more details.
