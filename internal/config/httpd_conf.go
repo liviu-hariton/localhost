@@ -92,6 +92,7 @@ func AddVirtualHost(domain, documentRoot string) error {
 	// Ensure the public directory exists
 	publicDir := fmt.Sprintf("%s/public", documentRoot)
 	if err := os.MkdirAll(publicDir, 0755); err != nil {
+		rollback(vhostFile, publicDir)
 		return utils.LogError("Creating public directory", err)
 	}
 
@@ -107,6 +108,7 @@ func AddVirtualHost(domain, documentRoot string) error {
 	// Open the file for writing
 	file, err := os.OpenFile(vhostFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
+		rollback(vhostFile, publicDir)
 		return utils.LogError(fmt.Sprintf("Creating vhost file '%s'", vhostFile), err)
 	}
 	defer file.Close()
@@ -148,9 +150,24 @@ func AddVirtualHost(domain, documentRoot string) error {
 
 	// Write the configuration to the file
 	if _, err := file.WriteString(vhostConfig); err != nil {
+		rollback(vhostFile, publicDir)
 		return utils.LogError(fmt.Sprintf("Writing to vhost file '%s'", vhostFile), err)
 	}
 
 	fmt.Printf("✔ Virtual host configuration for '%s' created at '%s'.\n", domain, vhostFile)
 	return nil
+}
+
+func rollback(vhostFile, publicDir string) {
+	fmt.Println("Rolling back changes...")
+
+	// Remove the vhost file
+	if err := os.Remove(vhostFile); err == nil {
+		fmt.Printf("✔ Removed partial vhost file: %s\n", vhostFile)
+	}
+
+	// Remove the public directory
+	if err := os.RemoveAll(publicDir); err == nil {
+		fmt.Printf("✔ Removed partial public directory: %s\n", publicDir)
+	}
 }
