@@ -8,6 +8,8 @@ import (
 	"os"
 	"os/exec"
 	"strings"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // HttpdConfPath defines the path to the Apache main configuration file.
@@ -54,6 +56,11 @@ func CheckPHPWorking() error {
 
 // InstallPHP attempts to install PHP using Homebrew.
 func InstallPHP() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would install PHP using Homebrew.")
+		return nil
+	}
+
 	fmt.Println("PHP is not installed. Attempting to install it using Homebrew...")
 
 	cmd := exec.Command("brew", "install", "php")
@@ -103,6 +110,11 @@ func VerifyPHP() error {
 }
 
 func EnablePHPModuleInHttpdConf() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would enable PHP module in Apache configuration.")
+		return nil
+	}
+
 	fmt.Println("Enabling PHP module in Apache configuration...")
 
 	file, err := os.Open(HttpdConfPath)

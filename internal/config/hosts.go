@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // HostsFilePath defines the path to the hosts file
@@ -35,6 +37,11 @@ func CheckDomainInHosts(domain string) (bool, error) {
 
 // AddDomainToHosts adds the domain to the hosts file if it doesn't already exist.
 func AddDomainToHosts(domain string) error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would add the domain to the hosts file.")
+		return nil
+	}
+
 	exists, err := CheckDomainInHosts(domain)
 	if err != nil {
 		return err

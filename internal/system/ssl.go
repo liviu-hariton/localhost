@@ -21,23 +21,28 @@ func EnsureSSLCertificates() error {
 		fmt.Printf("SSL certificate not found at %s. Generating a self-signed certificate...\n", sslCertificateFile)
 
 		// Ensure the /etc/apache2/ssl directory exists
-		if err := os.MkdirAll("/etc/apache2/ssl", 0755); err != nil {
+		if err := utils.CreateDirectory("/etc/apache2/ssl"); err != nil {
 			return utils.LogError("Creating SSL directory", err)
 		}
 
 		// Generate a self-signed certificate
-		cmd := exec.Command("openssl", "req", "-x509", "-nodes", "-days", "365", "-newkey", "rsa:2048",
-			"-keyout", sslCertificateKeyFile,
-			"-out", sslCertificateFile,
-			"-subj", "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost")
-		cmd.Stdout = os.Stdout
-		cmd.Stderr = os.Stderr
+		if !utils.IsDryRun() {
+			cmd := exec.Command("openssl", "req", "-x509", "-nodes", "-days", "365", "-newkey", "rsa:2048",
+				"-keyout", sslCertificateKeyFile,
+				"-out", sslCertificateFile,
+				"-subj", "/C=US/ST=State/L=City/O=Organization/OU=Unit/CN=localhost")
+			cmd.Stdout = os.Stdout
+			cmd.Stderr = os.Stderr
 
-		if err := cmd.Run(); err != nil {
-			return utils.LogError("Generating self-signed SSL certificate", err)
+			if err := cmd.Run(); err != nil {
+				return utils.LogError("Generating self-signed SSL certificate", err)
+			}
+
+			fmt.Printf("✔ Self-signed SSL certificate generated:\n - Certificate: %s\n - Key: %s\n", sslCertificateFile, sslCertificateKeyFile)
+		} else {
+			fmt.Println("DRY RUN: Would Generate a self-signed certificate.")
 		}
 
-		fmt.Printf("✔ Self-signed SSL certificate generated:\n - Certificate: %s\n - Key: %s\n", sslCertificateFile, sslCertificateKeyFile)
 	} else {
 		fmt.Println("✔ SSL certificates already exist.")
 	}

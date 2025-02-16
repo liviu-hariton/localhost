@@ -6,6 +6,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // CheckMySQLInstalled verifies if MySQL is installed on the system.
@@ -47,6 +49,11 @@ func CheckMySQLRunning() error {
 
 // InstallMySQL attempts to install MySQL using Homebrew.
 func InstallMySQL() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would install MySQL using Homebrew.")
+		return nil
+	}
+
 	fmt.Println("MySQL is not installed. Attempting to install it using Homebrew...")
 
 	cmd := exec.Command("brew", "install", "mysql")
@@ -65,6 +72,11 @@ func InstallMySQL() error {
 
 // RestartMySQL attempts to restart MySQL using Homebrew services.
 func RestartMySQL() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would restart MySQL.")
+		return nil
+	}
+
 	cmd := exec.Command("brew", "services", "restart", "mysql")
 	var out bytes.Buffer
 	cmd.Stdout = &out

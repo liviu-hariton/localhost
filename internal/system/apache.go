@@ -10,6 +10,8 @@ import (
 	"fmt"
 	"os/exec"
 	"strings"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // CheckApacheInstalled verifies if Apache is installed on the system.
@@ -21,7 +23,7 @@ func CheckApacheInstalled() error {
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("Apache is not installed or not accessible: %s", out.String())
+		return fmt.Errorf("apache is not installed or not accessible: %s", out.String())
 	}
 
 	// Apache is installed
@@ -46,11 +48,16 @@ func CheckApacheRunning() error {
 		return nil
 	}
 
-	return errors.New("Apache is not running")
+	return errors.New("apache is not running")
 }
 
 // RestartApache attempts to restart Apache if it is not running.
 func RestartApache() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would restart Apache server.")
+		return nil
+	}
+
 	cmd := exec.Command("sudo", "apachectl", "-k", "restart")
 	var out bytes.Buffer
 	cmd.Stdout = &out
@@ -77,6 +84,7 @@ func VerifyApache() error {
 	// Check if Apache is running
 	if err := CheckApacheRunning(); err != nil {
 		fmt.Println("Apache is not running. Attempting to restart...")
+
 		if restartErr := RestartApache(); restartErr != nil {
 			return fmt.Errorf("failed to restart Apache: %s", restartErr.Error())
 		}

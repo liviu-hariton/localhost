@@ -41,21 +41,29 @@ func EnsureVhostsEnabled() error {
 
 	// If the wildcard line doesn't exist, add it after the default vhosts line
 	if !includeVhostsWildcard {
-		fmt.Println("✔ Adding 'Include /usr/local/etc/httpd/extra/vhosts/*.conf' to httpd.conf")
-		lines = append(lines, "Include /usr/local/etc/httpd/extra/vhosts/*.conf")
+		if utils.IsDryRun() {
+			fmt.Println("DRY RUN: Would add 'Include /usr/local/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
+		} else {
+			lines = append(lines, "Include /usr/local/etc/httpd/extra/vhosts/*.conf")
+			fmt.Println("✔ Added 'Include /usr/local/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
+		}
 	}
 
 	// Write the updated content back to httpd.conf
-	file, err = os.OpenFile(HttpdConfPath, os.O_WRONLY|os.O_TRUNC, 0644)
-	if err != nil {
-		return utils.LogError("Opening httpd.conf for writing", err)
-	}
-	defer file.Close()
-
-	for _, line := range lines {
-		if _, err := file.WriteString(line + "\n"); err != nil {
-			return utils.LogError("Writing to httpd.conf", err)
+	if !utils.IsDryRun() {
+		file, err = os.OpenFile(HttpdConfPath, os.O_WRONLY|os.O_TRUNC, 0644)
+		if err != nil {
+			return utils.LogError("Opening httpd.conf for writing", err)
 		}
+		defer file.Close()
+
+		for _, line := range lines {
+			if _, err := file.WriteString(line + "\n"); err != nil {
+				return utils.LogError("Writing to httpd.conf", err)
+			}
+		}
+	} else {
+		fmt.Println("DRY RUN: Would update httpd.conf with new content.")
 	}
 
 	if !includeVhostsWildcard {
@@ -80,30 +88,34 @@ func AddVirtualHost(domain, documentRoot string) error {
 	sslAccessLogDir := fmt.Sprintf("%s/ssl/access_log", baseLogDir)
 
 	// Ensure the vhosts directory exists
-	if err := os.MkdirAll(vhostsDir, 0755); err != nil {
+	if err := utils.CreateDirectory(vhostsDir); err != nil {
 		return utils.LogError("Creating vhosts directory", err)
 	}
 
 	// Ensure the log directories exist
-	if err := os.MkdirAll(fmt.Sprintf("%s/ssl", baseLogDir), 0755); err != nil {
+	if err := utils.CreateDirectory(fmt.Sprintf("%s/ssl", baseLogDir)); err != nil {
 		return utils.LogError("Creating log directories", err)
 	}
 
 	// Ensure the public directory exists
 	publicDir := fmt.Sprintf("%s/public", documentRoot)
-	if err := os.MkdirAll(publicDir, 0755); err != nil {
+	if err := utils.CreateDirectory(publicDir); err != nil {
 		rollback(vhostFile, publicDir)
 		return utils.LogError("Creating public directory", err)
 	}
 
 	// Write the dummy index.php file
-	indexPhpFile := fmt.Sprintf("%s/index.php", publicDir)
-	indexPhpContent := fmt.Sprintf("<?php\necho 'It worked! You are on %s domain.';\n", domain)
+	if !utils.IsDryRun() {
+		indexPhpFile := fmt.Sprintf("%s/index.php", publicDir)
+		indexPhpContent := fmt.Sprintf("<?php\necho 'It worked! You are on %s domain.';\n", domain)
 
-	if err := os.WriteFile(indexPhpFile, []byte(indexPhpContent), 0644); err != nil {
-		return utils.LogError("Writing index.php file", err)
+		if err := os.WriteFile(indexPhpFile, []byte(indexPhpContent), 0644); err != nil {
+			return utils.LogError("Writing index.php file", err)
+		}
+		fmt.Printf("✔ Dummy index.php file created at '%s'.\n", indexPhpFile)
+	} else {
+		fmt.Println("DRY RUN: Would write the dummy index.php file.")
 	}
-	fmt.Printf("✔ Dummy index.php file created at '%s'.\n", indexPhpFile)
 
 	// Open the file for writing
 	file, err := os.OpenFile(vhostFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)

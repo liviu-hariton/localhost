@@ -11,6 +11,12 @@ import (
 	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
+var dryRun bool
+
+func init() {
+	flag.BoolVar(&dryRun, "dry-run", false, "Simulate changes without modifying any files or directories")
+}
+
 func main() {
 	// Relaunch with sudo if necessary
 	if err := utils.RelaunchWithSudo(); err != nil {
@@ -21,7 +27,15 @@ func main() {
 	// Define command-line flags
 	domain := flag.String("domain", "", "The local domain to set up (e.g., myproject.local)")
 	doc_root := flag.String("doc_root", "", "The document root for the virtual host")
+
 	flag.Parse()
+
+	// Pass the dryRun mode to the system package
+	utils.SetDryRun(dryRun)
+
+	if dryRun {
+		fmt.Println("Running in Dry Run mode: No changes will be made.")
+	}
 
 	// Ensure the domain and document root are provided
 	if *domain == "" || *doc_root == "" {
