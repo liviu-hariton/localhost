@@ -45,6 +45,10 @@ LocalHost is a utility for web developers to set up and manage multiple local do
 
 * macOS includes a pre-installed version of Apache. However, you may check to see if the `/usr/local/etc/httpd/extra/` directory exists as expected
     * here, the folder `vhosts` will be created for keeping the virtual host configuration files that will be created
+* the standard Apache configuration is located at `/usr/local/etc/httpd/httpd.conf`
+* the self-signed certificates will be stored in
+    * `/etc/apache2/ssl/server.crt`
+    * `/etc/apache2/ssl/server.key`
 
 ### Installation
 
@@ -88,9 +92,23 @@ You nee to provide two parameters to the command:
 * `-doc_root` - this it the path on disk were your project's files will reside (e.g., `/path/on/disk/to/your/project`)
     * if the path does not exists, it will be created automatically for you
 
+You can, also, add the `--no-dns-reset` flag to skip the local DNS cache flushing and resetting the `mDNSResponder`
+
 ```bash
 localhost create -domain=myproject.local -doc_root=/path/to/myproject
 ```
+
+#### How it works
+
+* checks if Apache is installed and, if Apache is not running, attempts to restart it
+* checks if MySQL is installed and, if not, tries to install it via Homebrew. Next, it attempts to start it as a background service
+    * it will install [the latest MySQL version available in Homebrew](https://formulae.brew.sh/formula/mysql#default)
+* checks if PHP is installed and, if not, tries to install it via Homebrew. Next, it attempts to start it as a background service
+    * it will install [the latest PHP version available in Homebrew](https://formulae.brew.sh/formula/php#default)
+    * also, it will enable the PHP module in the Apache's standard configuration
+* adds the new required entry into the `/etc/hosts` file
+* checks if virtual hosts are enabled in your Apache configuration and, if so, creates the new virtual host configuration
+* ensures the SSL certificate and key files exist, generating them if necessary (self-signed)
 
 ### List available local domains
 
@@ -111,10 +129,17 @@ Configured domains:
 ### Remove an existing local domain
 
 In order to remove an existing local domain, run:
+* you can, also, add the `--no-dns-reset` flag to skip the local DNS cache flushing and resetting the `mDNSResponder`
 
 ```bash
 localhost delete -domain=myproject.local
 ```
+
+#### How it works
+
+* removes the local domain entry from `/etc/hosts`
+* deletes the corresponding virtual host configuration file, previously created
+* restarts Apache and flushes the DNS cache (if the `--no-dns-reset` flag is not set)
 
 ### Dry-Run mode
 
@@ -122,6 +147,42 @@ You can simulates actions without making any actual changes to your system (so t
 
 ```bash
 localhost create -domain=myproject.local -doc_root=/path/to/myproject --dry-run
+```
+
+You will get an output like this:
+
+```bash
+[INFO] Dry Run mode detected. Skipping privilege escalation.
+[INFO] Running in Dry Run mode: No changes will be made.
+[INFO] Starting setup for domain: myproject.local
+
+Starting system checks...
+[INFO] Checking Apache setup...
+✔ Apache is installed.
+✔ Apache is running.
+[INFO] Checking MySQL setup...
+✔ MySQL is installed.
+✔ MySQL is running.
+[INFO] Checking PHP setup...
+[SUCCESS] PHP is installed.
+[SUCCESS] PHP is working correctly.
+[SUCCESS] All checks passed successfully!
+Modifying hosts file for domain: myproject.local
+DRY RUN: Would add the domain to the hosts file.
+Ensuring vhosts are enabled and adding virtual host...
+DRY RUN: Would update httpd.conf with new content.
+✔ Virtual hosts wildcard line already exists in httpd.conf.
+DRY RUN: Would create directory: /usr/local/etc/httpd/extra/vhosts/
+DRY RUN: Would create directory: /path/to/myproject/_logs/myproject.local/ssl
+DRY RUN: Would create directory: /path/to/myproject/public
+DRY RUN: Would write the dummy index.php file.
+DRY RUN: Would write the virtual host configuration file.
+[INFO] Restarting Apache to apply changes...
+DRY RUN: Would restart Apache server and flush the DNS cache.
+[INFO] Checking for SSL certificates...
+[SUCCESS] SSL certificates already exist.
+[SUCCESS] All changes applied successfully!
+[INFO] You should now be able to access your new project at http://myproject.local or https://myproject.local
 ```
 
 ### Uninstallation
