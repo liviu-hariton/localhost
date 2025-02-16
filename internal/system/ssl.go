@@ -14,11 +14,11 @@ const sslCertificateKeyFile = "/etc/apache2/ssl/server.key"
 
 // EnsureSSLCertificates ensures the SSL certificate and key files exist, generating them if necessary.
 func EnsureSSLCertificates() error {
-	fmt.Println("Checking for SSL certificates...")
+	utils.LogInfo("Checking for SSL certificates...")
 
 	// Check if the certificate and key files exist
 	if _, err := os.Stat(sslCertificateFile); os.IsNotExist(err) {
-		fmt.Printf("SSL certificate not found at %s. Generating a self-signed certificate...\n", sslCertificateFile)
+		utils.LogWarning(fmt.Sprintf("SSL certificate not found at %s. Generating a self-signed certificate...\n", sslCertificateFile))
 
 		// Ensure the /etc/apache2/ssl directory exists
 		if err := utils.CreateDirectory("/etc/apache2/ssl"); err != nil {
@@ -38,13 +38,13 @@ func EnsureSSLCertificates() error {
 				return utils.LogError("Generating self-signed SSL certificate", err)
 			}
 
-			fmt.Printf("✔ Self-signed SSL certificate generated:\n - Certificate: %s\n - Key: %s\n", sslCertificateFile, sslCertificateKeyFile)
+			utils.LogSuccess(fmt.Sprintf("✔ Self-signed SSL certificate generated:\n - Certificate: %s\n - Key: %s\n", sslCertificateFile, sslCertificateKeyFile))
 		} else {
-			fmt.Println("DRY RUN: Would Generate a self-signed certificate.")
+			utils.LogInfo("DRY RUN: Would Generate a self-signed certificate.")
 		}
 
 	} else {
-		fmt.Println("✔ SSL certificates already exist.")
+		utils.LogSuccess("SSL certificates already exist.")
 	}
 
 	return nil

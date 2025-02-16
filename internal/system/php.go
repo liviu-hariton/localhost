@@ -28,7 +28,7 @@ func CheckPHPInstalled() error {
 	}
 
 	// PHP is installed
-	fmt.Println("✔ PHP is installed.")
+	utils.LogSuccess("PHP is installed.")
 	return nil
 }
 
@@ -47,7 +47,7 @@ func CheckPHPWorking() error {
 
 	output := out.String()
 	if strings.Contains(output, "PHP is working!") {
-		fmt.Println("✔ PHP is working correctly.")
+		utils.LogSuccess("PHP is working correctly.")
 		return nil
 	}
 
@@ -57,11 +57,11 @@ func CheckPHPWorking() error {
 // InstallPHP attempts to install PHP using Homebrew.
 func InstallPHP() error {
 	if utils.IsDryRun() {
-		fmt.Println("DRY RUN: Would install PHP using Homebrew.")
+		utils.LogInfo("DRY RUN: Would install PHP using Homebrew.")
 		return nil
 	}
 
-	fmt.Println("PHP is not installed. Attempting to install it using Homebrew...")
+	utils.LogSuccess("PHP is not installed. Attempting to install it using Homebrew...")
 
 	cmd := exec.Command("brew", "install", "php")
 	var out bytes.Buffer
@@ -73,13 +73,13 @@ func InstallPHP() error {
 		return fmt.Errorf("failed to install PHP: %s", out.String())
 	}
 
-	fmt.Println("✔ PHP installed successfully.")
+	utils.LogSuccess("PHP installed successfully.")
 	return nil
 }
 
 // VerifyPHP ensures PHP is installed and working correctly.
 func VerifyPHP() error {
-	fmt.Println("Checking PHP setup...")
+	utils.LogInfo("Checking PHP setup...")
 
 	// Check if PHP is installed
 	if err := CheckPHPInstalled(); err != nil {
@@ -111,11 +111,11 @@ func VerifyPHP() error {
 
 func EnablePHPModuleInHttpdConf() error {
 	if utils.IsDryRun() {
-		fmt.Println("DRY RUN: Would enable PHP module in Apache configuration.")
+		utils.LogInfo("DRY RUN: Would enable PHP module in Apache configuration.")
 		return nil
 	}
 
-	fmt.Println("Enabling PHP module in Apache configuration...")
+	utils.LogInfo("Enabling PHP module in Apache configuration...")
 
 	file, err := os.Open(HttpdConfPath)
 	if err != nil {
@@ -157,7 +157,8 @@ func EnablePHPModuleInHttpdConf() error {
 	// Add the PHP module loading line if not found
 	if !phpModuleLoaded {
 		lines = append([]string{"LoadModule php_module /usr/local/opt/php/lib/httpd/modules/libphp.so"}, lines...)
-		fmt.Println("✔ Added PHP module loading line to httpd.conf.")
+
+		utils.LogSuccess("✔ Added PHP module loading line to httpd.conf.")
 	}
 
 	// Add the SetHandler directive if not found
@@ -165,7 +166,8 @@ func EnablePHPModuleInHttpdConf() error {
 		lines = append(lines, "<FilesMatch \\.php$>")
 		lines = append(lines, "    SetHandler application/x-httpd-php")
 		lines = append(lines, "</FilesMatch>")
-		fmt.Println("✔ Added SetHandler directive to httpd.conf.")
+
+		utils.LogSuccess("Added SetHandler directive to httpd.conf.")
 	}
 
 	// Write the updated content back to httpd.conf
@@ -181,6 +183,6 @@ func EnablePHPModuleInHttpdConf() error {
 		}
 	}
 
-	fmt.Println("✔ PHP module and handler enabled in httpd.conf.")
+	utils.LogSuccess("PHP module and handler enabled in httpd.conf.")
 	return nil
 }

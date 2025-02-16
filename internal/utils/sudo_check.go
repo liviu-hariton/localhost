@@ -15,7 +15,7 @@ func RelaunchWithSudo() error {
 	}
 
 	// Relaunch the program with sudo
-	fmt.Println("Insufficient permissions. Relaunching with sudo...")
+	LogWarning("Insufficient permissions. Relaunching with sudo...")
 
 	cmd := exec.Command("sudo", append([]string{os.Args[0]}, os.Args[1:]...)...)
 	cmd.Stdin = os.Stdin

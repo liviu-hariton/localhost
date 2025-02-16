@@ -51,30 +51,64 @@ func CheckApacheRunning() error {
 	return errors.New("apache is not running")
 }
 
-// RestartApache attempts to restart Apache if it is not running.
+// RestartApache attempts to restart Apache and flushes the DNS cache.
 func RestartApache() error {
 	if utils.IsDryRun() {
-		fmt.Println("DRY RUN: Would restart Apache server.")
+		fmt.Println("DRY RUN: Would restart Apache server and flush the DNS cache.")
 		return nil
 	}
 
-	cmd := exec.Command("sudo", "apachectl", "-k", "restart")
-	var out bytes.Buffer
-	cmd.Stdout = &out
-	cmd.Stderr = &out
+	// Restart Apache
+	restartErr := utils.Spinner("Restarting Apache server...", func() error {
+		cmd := exec.Command("sudo", "apachectl", "-k", "restart")
+		var out bytes.Buffer
+		cmd.Stdout = &out
+		cmd.Stderr = &out
+		return cmd.Run()
+	})
 
-	err := cmd.Run()
-	if err != nil {
-		return fmt.Errorf("failed to restart Apache: %s", out.String())
+	if restartErr != nil {
+		return fmt.Errorf("failed to restart Apache: %s", restartErr.Error())
 	}
 
 	fmt.Println("✔ Apache restarted successfully.")
+
+	if !utils.HasFlag("--no-dns-reset") {
+		// Flush DNS cache
+		flushErr := utils.Spinner("Flushing DNS cache...", func() error {
+			cmd := exec.Command("sudo", "dscacheutil", "-flushcache")
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			cmd.Stderr = &out
+			return cmd.Run()
+		})
+		if flushErr != nil {
+			return fmt.Errorf("failed to flush DNS cache: %s", flushErr.Error())
+		}
+
+		// Reset mDNSResponder
+		resetErr := utils.Spinner("Resetting mDNSResponder...", func() error {
+			cmd := exec.Command("sudo", "killall", "-HUP", "mDNSResponder")
+			var out bytes.Buffer
+			cmd.Stdout = &out
+			cmd.Stderr = &out
+			return cmd.Run()
+		})
+		if resetErr != nil {
+			return fmt.Errorf("failed to reset mDNSResponder: %s", resetErr.Error())
+		}
+
+		utils.LogSuccess("DNS cache flushed and mDNSResponder reset successfully.")
+	} else {
+		utils.LogInfo("Skipping DNS cache flush and mDNSResponder reset as per user request.")
+	}
+
 	return nil
 }
 
 // VerifyApache checks if Apache is installed and running, and restarts it if needed.
 func VerifyApache() error {
-	fmt.Println("Checking Apache setup...")
+	utils.LogInfo("Checking Apache setup...")
 
 	// Check if Apache is installed
 	if err := CheckApacheInstalled(); err != nil {
@@ -83,7 +117,7 @@ func VerifyApache() error {
 
 	// Check if Apache is running
 	if err := CheckApacheRunning(); err != nil {
-		fmt.Println("Apache is not running. Attempting to restart...")
+		utils.LogWarning("Apache is not running. Attempting to restart...")
 
 		if restartErr := RestartApache(); restartErr != nil {
 			return fmt.Errorf("failed to restart Apache: %s", restartErr.Error())

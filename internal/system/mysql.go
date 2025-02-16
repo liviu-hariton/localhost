@@ -50,11 +50,11 @@ func CheckMySQLRunning() error {
 // InstallMySQL attempts to install MySQL using Homebrew.
 func InstallMySQL() error {
 	if utils.IsDryRun() {
-		fmt.Println("DRY RUN: Would install MySQL using Homebrew.")
+		utils.LogInfo("DRY RUN: Would install MySQL using Homebrew.")
 		return nil
 	}
 
-	fmt.Println("MySQL is not installed. Attempting to install it using Homebrew...")
+	utils.LogWarning("MySQL is not installed. Attempting to install it using Homebrew...")
 
 	cmd := exec.Command("brew", "install", "mysql")
 	var out bytes.Buffer
@@ -66,14 +66,14 @@ func InstallMySQL() error {
 		return fmt.Errorf("failed to install MySQL: %s", out.String())
 	}
 
-	fmt.Println("✔ MySQL installed successfully.")
+	utils.LogSuccess("MySQL installed successfully.")
 	return nil
 }
 
 // RestartMySQL attempts to restart MySQL using Homebrew services.
 func RestartMySQL() error {
 	if utils.IsDryRun() {
-		fmt.Println("DRY RUN: Would restart MySQL.")
+		utils.LogInfo("DRY RUN: Would restart MySQL.")
 		return nil
 	}
 
@@ -87,13 +87,13 @@ func RestartMySQL() error {
 		return fmt.Errorf("failed to restart MySQL: %s", out.String())
 	}
 
-	fmt.Println("✔ MySQL restarted successfully.")
+	utils.LogSuccess("MySQL restarted successfully.")
 	return nil
 }
 
 // VerifyMySQL ensures MySQL is installed, running, and starts it if needed.
 func VerifyMySQL() error {
-	fmt.Println("Checking MySQL setup...")
+	utils.LogInfo("Checking MySQL setup...")
 
 	// Check if MySQL is installed
 	if err := CheckMySQLInstalled(); err != nil {
@@ -107,7 +107,8 @@ func VerifyMySQL() error {
 
 	// Check if MySQL is running
 	if err := CheckMySQLRunning(); err != nil {
-		fmt.Println("MySQL is not running. Attempting to restart...")
+		utils.LogWarning("MySQL is not running. Attempting to restart...")
+
 		if restartErr := RestartMySQL(); restartErr != nil {
 			return fmt.Errorf("failed to restart MySQL: %s", restartErr.Error())
 		}
