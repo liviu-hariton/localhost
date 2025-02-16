@@ -125,6 +125,46 @@ localhost create -domain=myproject.local -doc_root=/path/to/myproject
 * checks if virtual hosts are enabled in your Apache configuration and, if so, creates the new virtual host configuration
 * ensures the SSL certificate and key files exist, generating them if necessary (self-signed)
 
+You should see an output like this in your terminal
+
+```
+[WARNING] Insufficient permissions. Relaunching with sudo...
+Password:
+[INFO] Starting setup for domain: myproject.local
+
+Starting system checks...
+[INFO] Checking Apache setup...
+✔ Apache is installed.
+✔ Apache is running.
+[INFO] Checking MySQL setup...
+✔ MySQL is installed.
+[WARNING] MySQL is not running. Attempting to restart...
+[SUCCESS] MySQL restarted successfully.
+[INFO] Checking PHP setup...
+[SUCCESS] PHP is installed.
+[SUCCESS] PHP is working correctly.
+[SUCCESS] All checks passed successfully!
+Modifying hosts file for domain: myproject.local
+✔ Successfully added 'myproject.local' to the hosts file.
+Ensuring vhosts are enabled and adding virtual host...
+✔ Virtual hosts wildcard line already exists in httpd.conf.
+✔ Created directory: /usr/local/etc/httpd/extra/vhosts/
+✔ Created directory: /Users/liviu/Dev-local/myproject/_logs/myproject.local/ssl
+✔ Created directory: /Users/liviu/Dev-local/myproject/public
+✔ Dummy index.php file created at '/Users/liviu/Dev-local/myproject/public/index.php'.
+✔ Virtual host configuration for 'myproject.local' created at '/usr/local/etc/httpd/extra/vhosts/myproject.local.conf'.
+[INFO] Restarting Apache to apply changes...
+Restarting Apache server... ✔
+✔ Apache restarted successfully.
+Flushing DNS cache... ✔
+Resetting mDNSResponder... ✔
+[SUCCESS] DNS cache flushed and mDNSResponder reset successfully.
+[INFO] Checking for SSL certificates...
+[SUCCESS] SSL certificates already exist.
+[SUCCESS] All changes applied successfully!
+[INFO] You should now be able to access your new project at http://myproject.local or https://myproject.local
+```
+
 ### List available local domains
 
 In order to see what local domains (configurations) are available at any time, run:
