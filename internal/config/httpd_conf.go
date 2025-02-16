@@ -5,6 +5,8 @@ import (
 	"fmt"
 	"os"
 	"strings"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // HttpdConfPath defines the path to the Apache main configuration file.
@@ -14,7 +16,7 @@ const HttpdConfPath = "/usr/local/etc/httpd/httpd.conf"
 func EnsureVhostsEnabled() error {
 	file, err := os.Open(HttpdConfPath)
 	if err != nil {
-		return fmt.Errorf("failed to open httpd.conf: %s", err.Error())
+		return utils.LogError("Opening httpd.conf", err)
 	}
 	defer file.Close()
 
@@ -34,7 +36,7 @@ func EnsureVhostsEnabled() error {
 	}
 
 	if err := scanner.Err(); err != nil {
-		return fmt.Errorf("failed to read httpd.conf: %s", err.Error())
+		return utils.LogError("Reading httpd.conf", err)
 	}
 
 	// If the wildcard line doesn't exist, add it after the default vhosts line
@@ -46,13 +48,13 @@ func EnsureVhostsEnabled() error {
 	// Write the updated content back to httpd.conf
 	file, err = os.OpenFile(HttpdConfPath, os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to open httpd.conf for writing: %s", err.Error())
+		return utils.LogError("Opening httpd.conf for writing", err)
 	}
 	defer file.Close()
 
 	for _, line := range lines {
 		if _, err := file.WriteString(line + "\n"); err != nil {
-			return fmt.Errorf("failed to write to httpd.conf: %s", err.Error())
+			return utils.LogError("Writing to httpd.conf", err)
 		}
 	}
 
@@ -79,18 +81,18 @@ func AddVirtualHost(domain, documentRoot string) error {
 
 	// Ensure the vhosts directory exists
 	if err := os.MkdirAll(vhostsDir, 0755); err != nil {
-		return fmt.Errorf("failed to create vhosts directory: %s", err.Error())
+		return utils.LogError("Creating vhosts directory", err)
 	}
 
 	// Ensure the log directories exist
 	if err := os.MkdirAll(fmt.Sprintf("%s/ssl", baseLogDir), 0755); err != nil {
-		return fmt.Errorf("failed to create log directories: %s", err.Error())
+		return utils.LogError("Creating log directories", err)
 	}
 
 	// Ensure the public directory exists
 	publicDir := fmt.Sprintf("%s/public", documentRoot)
 	if err := os.MkdirAll(publicDir, 0755); err != nil {
-		return fmt.Errorf("failed to create public directory: %s", err.Error())
+		return utils.LogError("Creating public directory", err)
 	}
 
 	// Write the dummy index.php file
@@ -98,14 +100,14 @@ func AddVirtualHost(domain, documentRoot string) error {
 	indexPhpContent := fmt.Sprintf("<?php\necho 'It worked! You are on %s domain.';\n", domain)
 
 	if err := os.WriteFile(indexPhpFile, []byte(indexPhpContent), 0644); err != nil {
-		return fmt.Errorf("failed to write to index.php file '%s': %s", indexPhpFile, err.Error())
+		return utils.LogError("Writing index.php file", err)
 	}
 	fmt.Printf("✔ Dummy index.php file created at '%s'.\n", indexPhpFile)
 
 	// Open the file for writing
 	file, err := os.OpenFile(vhostFile, os.O_CREATE|os.O_WRONLY|os.O_TRUNC, 0644)
 	if err != nil {
-		return fmt.Errorf("failed to create vhost file '%s': %s", vhostFile, err.Error())
+		return utils.LogError(fmt.Sprintf("Creating vhost file '%s'", vhostFile), err)
 	}
 	defer file.Close()
 
@@ -146,7 +148,7 @@ func AddVirtualHost(domain, documentRoot string) error {
 
 	// Write the configuration to the file
 	if _, err := file.WriteString(vhostConfig); err != nil {
-		return fmt.Errorf("failed to write to vhost file '%s': %s", vhostFile, err.Error())
+		return utils.LogError(fmt.Sprintf("Writing to vhost file '%s'", vhostFile), err)
 	}
 
 	fmt.Printf("✔ Virtual host configuration for '%s' created at '%s'.\n", domain, vhostFile)

@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"os"
 	"os/exec"
+
+	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
 // Default SSL certificate paths
@@ -20,7 +22,7 @@ func EnsureSSLCertificates() error {
 
 		// Ensure the /etc/apache2/ssl directory exists
 		if err := os.MkdirAll("/etc/apache2/ssl", 0755); err != nil {
-			return fmt.Errorf("failed to create SSL directory: %s", err.Error())
+			return utils.LogError("Creating SSL directory", err)
 		}
 
 		// Generate a self-signed certificate
@@ -32,7 +34,7 @@ func EnsureSSLCertificates() error {
 		cmd.Stderr = os.Stderr
 
 		if err := cmd.Run(); err != nil {
-			return fmt.Errorf("failed to generate self-signed SSL certificate: %s", err.Error())
+			return utils.LogError("Generating self-signed SSL certificate", err)
 		}
 
 		fmt.Printf("✔ Self-signed SSL certificate generated:\n - Certificate: %s\n - Key: %s\n", sslCertificateFile, sslCertificateKeyFile)
