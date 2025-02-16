@@ -10,28 +10,28 @@ If you notice areas where the project can be improved or optimized, I’d greatl
 
 ### Main Areas Covered by This Project
 
-* System-Level Operations:
-    * Modifying system files like /etc/hosts.
-    * Managing services such as Apache and DNS resolvers.
+* System-level operations:
+    * modifying system files like `/etc/hosts`.
+    * managing services such as Apache and DNS resolvers.
 
-* File Handling and I/O:
-    * Reading and writing configuration files (e.g., Apache virtual hosts).
-    * Safely manipulating directories and files.
+* File handling and I/O:
+    * reading and writing configuration files (e.g., Apache virtual hosts).
+    * safely manipulating directories and files.
 
-* Command-Line Interface (CLI) Development:
-    * Building a user-friendly CLI tool with subcommands, flags, and interactive prompts.
-    * Supporting advanced features like dry-run mode and logging.
+* Command-Line Interface (CLI) development:
+    * building a user-friendly CLI tool with subcommands, flags, and interactive prompts.
+    * supporting advanced features like Dry-Run mode and logging.
 
-* Process Management:
-    * Running external system commands (e.g., sudo, apachectl) and handling their outputs/errors.
-    * Restarting services and flushing DNS cache programmatically.
+* Process management:
+    * running external system commands (e.g., `sudo`, `apachectl`) and handling their outputs/errors.
+    * restarting services and flushing DNS cache programmatically.
 
-* Error Handling and Logging:
-    * Implementing robust error handling for critical operations.
-    * Logging messages with timestamps and color-coded feedback for better user experience.
+* Error handling and logging:
+    * implementing robust error handling for critical operations.
+    * logging messages with timestamps and color-coded feedback for better user experience.
 
-* Cross-Platform Builds:
-    * Exploring Go’s capabilities for compiling native and universal binaries for macOS (ARM64 and AMD64).
+* Cross-platform builds:
+    * exploring Go’s capabilities for compiling native and universal binaries for macOS (ARM64 and AMD64).
 
 ### Resources and documentation
 * [the official Go documentation](https://go.dev/doc/) and [language specification](https://go.dev/ref/spec)
