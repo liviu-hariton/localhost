@@ -190,6 +190,14 @@ In order to remove an existing local domain, run:
 localhost delete -domain=myproject.local
 ```
 
+Before proceeding, it will ask you if you're sure
+
+```
+Are you sure you want to delete the domain 'myproject.local' and its references in /etc/hosts? (y/N):
+```
+
+**NOTE:** this command will NOT delete the files created at `/path/on/disk/to/your/project`
+
 #### How it works
 
 * removes the local domain entry from `/etc/hosts`
