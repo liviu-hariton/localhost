@@ -1,4 +1,4 @@
-## Why This Project Exists
+## Why this project exists
 
 This project is not only a functional tool but also my way of learning Go by solving real-world problems. By working on this project, I’m hoping to gain hands-on experience with:
 
@@ -8,7 +8,7 @@ This project is not only a functional tool but also my way of learning Go by sol
 
 If you notice areas where the project can be improved or optimized, I’d greatly appreciate your feedback or contributions! This is as much a learning experience for me as it is a functional tool for developers. 😊
 
-### Main Areas Covered by This Project
+### Main areas covered by this project
 
 * System-level operations:
     * modifying system files like `/etc/hosts`.
