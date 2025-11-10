@@ -13,7 +13,7 @@ import (
 )
 
 // HttpdConfPath defines the path to the Apache main configuration file.
-const HttpdConfPath = "/usr/local/etc/httpd/httpd.conf"
+const HttpdConfPath = "/opt/homebrew/etc/httpd/httpd.conf"
 
 // CheckPHPInstalled verifies if PHP is installed on the system.
 func CheckPHPInstalled() error {

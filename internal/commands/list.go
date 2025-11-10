@@ -8,7 +8,7 @@ import (
 )
 
 func ListCommand(args []string) {
-	vhostsDir := "/usr/local/etc/httpd/extra/vhosts/"
+	vhostsDir := "/opt/homebrew/etc/httpd/extra/vhosts/"
 	files, err := os.ReadDir(vhostsDir)
 	if err != nil {
 		utils.LogError(fmt.Sprintf("Error reading vhosts directory: %s\n", err), err)

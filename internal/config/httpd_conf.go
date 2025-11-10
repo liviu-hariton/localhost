@@ -10,7 +10,7 @@ import (
 )
 
 // HttpdConfPath defines the path to the Apache main configuration file.
-const HttpdConfPath = "/usr/local/etc/httpd/httpd.conf"
+const HttpdConfPath = "/opt/homebrew/etc/httpd/httpd.conf"
 
 // EnsureVhostsEnabled ensures that the httpd.conf file includes the vhosts file.
 func EnsureVhostsEnabled() error {
@@ -33,7 +33,7 @@ func EnsureVhostsEnabled() error {
 		line := scanner.Text()
 
 		// Check if the vhosts wildcard line already exists
-		if strings.Contains(line, "Include /usr/local/etc/httpd/extra/vhosts/*.conf") {
+		if strings.Contains(line, "Include /opt/homebrew/etc/httpd/extra/vhosts/*.conf") {
 			includeVhostsWildcard = true
 		}
 
@@ -47,10 +47,10 @@ func EnsureVhostsEnabled() error {
 	// If the wildcard line doesn't exist, add it after the default vhosts line
 	if !includeVhostsWildcard {
 		if utils.IsDryRun() {
-			fmt.Println("DRY RUN: Would add 'Include /usr/local/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
+			fmt.Println("DRY RUN: Would add 'Include /opt/homebrew/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
 		} else {
-			lines = append(lines, "Include /usr/local/etc/httpd/extra/vhosts/*.conf")
-			fmt.Println("✔ Added 'Include /usr/local/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
+			lines = append(lines, "Include /opt/homebrew/etc/httpd/extra/vhosts/*.conf")
+			fmt.Println("✔ Added 'Include /opt/homebrew/etc/httpd/extra/vhosts/*.conf' to httpd.conf.")
 		}
 	}
 
@@ -82,7 +82,7 @@ func EnsureVhostsEnabled() error {
 // AddVirtualHost creates a new virtual host configuration for the domain.
 func AddVirtualHost(domain, documentRoot string) error {
 	// Define the path for the new vhost config file
-	vhostsDir := "/usr/local/etc/httpd/extra/vhosts/"
+	vhostsDir := "/opt/homebrew/etc/httpd/extra/vhosts/"
 	vhostFile := vhostsDir + domain + ".conf"
 
 	// Derive log paths based on the document root
@@ -153,8 +153,8 @@ func AddVirtualHost(domain, documentRoot string) error {
     DocumentRoot "%s/public"
     SSLEngine on
     SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-    SSLCertificateFile /usr/local/etc/httpd/ssl/server.crt
-    SSLCertificateKeyFile /usr/local/etc/httpd/ssl/server.key
+    SSLCertificateFile /opt/homebrew/etc/httpd/ssl/server.crt
+    SSLCertificateKeyFile /opt/homebrew/etc/httpd/ssl/server.key
     ErrorLog "%s"
     CustomLog "%s" common
 

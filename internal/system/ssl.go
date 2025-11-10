@@ -9,8 +9,8 @@ import (
 )
 
 // Default SSL certificate paths
-const sslCertificateFile = "/usr/local/etc/httpd/ssl/server.crt"
-const sslCertificateKeyFile = "/usr/local/etc/httpd/ssl/server.key"
+const sslCertificateFile = "/opt/homebrew/etc/httpd/ssl/server.crt"
+const sslCertificateKeyFile = "/opt/homebrew/etc/httpd/ssl/server.key"
 
 // EnsureSSLCertificates ensures the SSL certificate and key files exist, generating them if necessary.
 func EnsureSSLCertificates() error {
@@ -20,9 +20,9 @@ func EnsureSSLCertificates() error {
 	if _, err := os.Stat(sslCertificateFile); os.IsNotExist(err) {
 		utils.LogWarning(fmt.Sprintf("SSL certificate not found at %s. Generating a self-signed certificate...\n", sslCertificateFile))
 
-		// Ensure the /usr/local/etc/httpd/ssl directory exists
+		// Ensure the /opt/homebrew/etc/httpd/ssl directory exists
 		if !utils.IsDryRun() {
-			if err := utils.CreateDirectory("/usr/local/etc/httpd/ssl"); err != nil {
+			if err := utils.CreateDirectory("/opt/homebrew/etc/httpd/ssl"); err != nil {
 				return utils.LogError("Creating SSL directory", err)
 			}
 		} else {

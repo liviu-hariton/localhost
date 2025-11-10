@@ -40,7 +40,7 @@ func DeleteCommand(args []string) {
 	}
 
 	// Remove the virtual host configuration file
-	vhostsDir := "/usr/local/etc/httpd/extra/vhosts/"
+	vhostsDir := "/opt/homebrew/etc/httpd/extra/vhosts/"
 	vhostFile := vhostsDir + *domain + ".conf"
 
 	if err := os.Remove(vhostFile); err != nil {

@@ -58,12 +58,12 @@ LocalHost is a utility for web developers to set up and manage multiple local do
 ### Prerequisites
 
 * even though MacOS includes a pre-installed version of Apache, this tool will install the latest available version in Homebrew.
-    * the default install location is `/usr/local/etc/httpd/extra/`
+    * the default install location is `/opt/homebrew/etc/httpd/extra/`
     * here, the folder `vhosts` will be created for keeping the virtual host configuration files that will be created
-* the standard Apache configuration is located at `/usr/local/etc/httpd/httpd.conf`
+* the standard Apache configuration is located at `/opt/homebrew/etc/httpd/httpd.conf`
 * the self-signed certificates will be stored in
-    * `/usr/local/etc/httpd/ssl/server.crt`
-    * `/usr/local/etc/httpd/ssl/server.key`
+    * `/opt/homebrew/etc/httpd/ssl/server.crt`
+    * `/opt/homebrew/etc/httpd/ssl/server.key`
 
 ### Installation
 
@@ -150,11 +150,11 @@ Modifying hosts file for domain: myproject.local
 ✔ Successfully added 'myproject.local' to the hosts file.
 Ensuring vhosts are enabled and adding virtual host...
 ✔ Virtual hosts wildcard line already exists in httpd.conf.
-✔ Created directory: /usr/local/etc/httpd/extra/vhosts/
+✔ Created directory: /opt/homebrew/etc/httpd/extra/vhosts/
 ✔ Created directory: /Users/liviu/Dev-local/myproject/_logs/myproject.local/ssl
 ✔ Created directory: /Users/liviu/Dev-local/myproject/public
 ✔ Dummy index.php file created at '/Users/liviu/Dev-local/myproject/public/index.php'.
-✔ Virtual host configuration for 'myproject.local' created at '/usr/local/etc/httpd/extra/vhosts/myproject.local.conf'.
+✔ Virtual host configuration for 'myproject.local' created at '/opt/homebrew/etc/httpd/extra/vhosts/myproject.local.conf'.
 [INFO] Restarting Apache to apply changes...
 Restarting Apache server... ✔
 ✔ Apache restarted successfully.
@@ -237,7 +237,7 @@ DRY RUN: Would add the domain to the hosts file.
 Ensuring vhosts are enabled and adding virtual host...
 DRY RUN: Would update httpd.conf with new content.
 ✔ Virtual hosts wildcard line already exists in httpd.conf.
-DRY RUN: Would create directory: /usr/local/etc/httpd/extra/vhosts/
+DRY RUN: Would create directory: /opt/homebrew/etc/httpd/extra/vhosts/
 DRY RUN: Would create directory: /path/to/myproject/_logs/myproject.local/ssl
 DRY RUN: Would create directory: /path/to/myproject/public
 DRY RUN: Would write the dummy index.php file.
@@ -265,12 +265,12 @@ sudo rm /usr/local/bin/localhost
 To remove all configurations created by the tool:
 
 ```bash
-sudo rm -rf /usr/local/etc/httpd/extra/vhosts/*.conf
+sudo rm -rf /opt/homebrew/etc/httpd/extra/vhosts/*.conf
 ```
 Alternatively, you can delete specific virtual host files:
 
 ```bash
-sudo rm /usr/local/etc/httpd/extra/vhosts/myproject.local.conf
+sudo rm /opt/homebrew/etc/httpd/extra/vhosts/myproject.local.conf
 ```
 
 3. Remove entries from `/etc/hosts`
