@@ -10,16 +10,16 @@ import (
 	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
-// CheckApacheInstalled verifies if Apache is installed on the system.
+// CheckApacheInstalled verifies if Apache is installed on the system via Homebrew.
 func CheckApacheInstalled() error {
-	cmd := exec.Command("apachectl", "-v")
+	cmd := exec.Command("brew", "list", "apache")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
 	err := cmd.Run()
 	if err != nil {
-		return fmt.Errorf("apache is not installed or not accessible: %s", out.String())
+		return errors.New("Apache is not installed or not accessible. Install it using Homebrew: 'brew install apache'")
 	}
 
 	// Apache is installed
@@ -44,7 +44,31 @@ func CheckApacheRunning() error {
 		return nil
 	}
 
-	return errors.New("apache is not running")
+	return errors.New("Apache is not running")
+}
+
+// InstallApache attempts to install Apache using Homebrew.
+
+func InstallApache() error {
+	if utils.IsDryRun() {
+		utils.LogInfo("DRY RUN: Would install Apache using Homebrew.")
+		return nil
+	}
+
+	utils.LogWarning("Apache is not installed. Attempting to install it using Homebrew...")
+
+	cmd := exec.Command("brew", "install", "apache")
+	var out bytes.Buffer
+	cmd.Stdout = &out
+	cmd.Stderr = &out
+
+	err := cmd.Run()
+	if err != nil {
+		return fmt.Errorf("failed to install Apache: %s", out.String())
+	}
+
+	utils.LogSuccess("Apache installed successfully.")
+	return nil
 }
 
 // RestartApache attempts to restart Apache and flushes the DNS cache.
@@ -56,7 +80,7 @@ func RestartApache() error {
 
 	// Restart Apache
 	restartErr := utils.Spinner("Restarting Apache server...", func() error {
-		cmd := exec.Command("sudo", "apachectl", "-k", "restart")
+		cmd := exec.Command("brew", "services", "restart", "apache")
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		cmd.Stderr = &out
@@ -108,7 +132,12 @@ func VerifyApache() error {
 
 	// Check if Apache is installed
 	if err := CheckApacheInstalled(); err != nil {
-		return err
+		fmt.Println(err)
+
+		// Attempt to install Apache
+		if installErr := InstallApache(); installErr != nil {
+			return installErr
+		}
 	}
 
 	// Check if Apache is running

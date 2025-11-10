@@ -34,6 +34,11 @@ func CheckPHPInstalled() error {
 
 // CheckPHPWorking verifies if PHP can execute a basic script.
 func CheckPHPWorking() error {
+	if utils.IsDryRun() {
+		utils.LogInfo("DRY RUN: Would check if PHP is working correctly.")
+		return nil
+	}
+
 	script := `echo "PHP is working!";`
 	cmd := exec.Command("php", "-r", script)
 	var out bytes.Buffer

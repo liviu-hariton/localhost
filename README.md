@@ -57,12 +57,13 @@ LocalHost is a utility for web developers to set up and manage multiple local do
 
 ### Prerequisites
 
-* macOS includes a pre-installed version of Apache. However, you may check to see if the `/usr/local/etc/httpd/extra/` directory exists as expected
+* even though MacOS includes a pre-installed version of Apache, this tool will install the latest available version in Homebrew.
+    * the default install location is `/usr/local/etc/httpd/extra/`
     * here, the folder `vhosts` will be created for keeping the virtual host configuration files that will be created
 * the standard Apache configuration is located at `/usr/local/etc/httpd/httpd.conf`
 * the self-signed certificates will be stored in
-    * `/etc/apache2/ssl/server.crt`
-    * `/etc/apache2/ssl/server.key`
+    * `/usr/local/etc/httpd/ssl/server.crt`
+    * `/usr/local/etc/httpd/ssl/server.key`
 
 ### Installation
 
@@ -115,7 +116,8 @@ localhost create -domain=myproject.local -doc_root=/path/to/myproject
 
 #### How it works
 
-* checks if Apache is installed and, if Apache is not running, attempts to restart it
+* checks if Apache is installed and, if not, tries to install it via Homebrew. Next, it attempts to start it as a background service
+    * it will install [the latest Apache version available in Homebrew](https://formulae.brew.sh/formula/httpd#default)
 * checks if MySQL is installed and, if not, tries to install it via Homebrew. Next, it attempts to start it as a background service
     * it will install [the latest MySQL version available in Homebrew](https://formulae.brew.sh/formula/mysql#default)
 * checks if PHP is installed and, if not, tries to install it via Homebrew. Next, it attempts to start it as a background service

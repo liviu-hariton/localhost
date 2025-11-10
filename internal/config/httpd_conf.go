@@ -14,6 +14,11 @@ const HttpdConfPath = "/usr/local/etc/httpd/httpd.conf"
 
 // EnsureVhostsEnabled ensures that the httpd.conf file includes the vhosts file.
 func EnsureVhostsEnabled() error {
+	if utils.IsDryRun() {
+		fmt.Println("DRY RUN: Would ensure vhosts are enabled and add the vhosts wildcard line to httpd.conf.")
+		return nil
+	}
+
 	file, err := os.Open(HttpdConfPath)
 	if err != nil {
 		return utils.LogError("Opening httpd.conf", err)
@@ -148,8 +153,8 @@ func AddVirtualHost(domain, documentRoot string) error {
     DocumentRoot "%s/public"
     SSLEngine on
     SSLCipherSuite ALL:!ADH:!EXPORT56:RC4+RSA:+HIGH:+MEDIUM:+LOW:+SSLv2:+EXP:+eNULL
-    SSLCertificateFile /etc/apache2/ssl/server.crt
-    SSLCertificateKeyFile /etc/apache2/ssl/server.key
+    SSLCertificateFile /usr/local/etc/httpd/ssl/server.crt
+    SSLCertificateKeyFile /usr/local/etc/httpd/ssl/server.key
     ErrorLog "%s"
     CustomLog "%s" common
 
