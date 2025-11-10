@@ -34,7 +34,7 @@ func CheckMySQLRunning() error {
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to check running services: %s", err.Error())
 	}
@@ -61,7 +61,7 @@ func InstallMySQL() error {
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to install MySQL: %s", out.String())
 	}
@@ -82,7 +82,7 @@ func RestartMySQL() error {
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to restart MySQL: %s", out.String())
 	}

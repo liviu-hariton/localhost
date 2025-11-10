@@ -73,7 +73,7 @@ func InstallPHP() error {
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to install PHP: %s", out.String())
 	}

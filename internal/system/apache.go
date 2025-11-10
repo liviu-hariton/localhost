@@ -12,14 +12,14 @@ import (
 
 // CheckApacheInstalled verifies if Apache is installed on the system via Homebrew.
 func CheckApacheInstalled() error {
-	cmd := exec.Command("brew", "list", "apache")
+	cmd := exec.Command("brew", "list", "httpd")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
-		return errors.New("Apache is not installed or not accessible. Install it using Homebrew: 'brew install apache'")
+		return errors.New("Apache is not installed or not accessible. Install it using Homebrew: 'brew install httpd'")
 	}
 
 	// Apache is installed
@@ -57,12 +57,12 @@ func InstallApache() error {
 
 	utils.LogWarning("Apache is not installed. Attempting to install it using Homebrew...")
 
-	cmd := exec.Command("brew", "install", "apache")
+	cmd := exec.Command("brew", "install", "httpd")
 	var out bytes.Buffer
 	cmd.Stdout = &out
 	cmd.Stderr = &out
 
-	err := cmd.Run()
+	err := utils.RunAsOriginalUser(cmd)
 	if err != nil {
 		return fmt.Errorf("failed to install Apache: %s", out.String())
 	}
@@ -80,11 +80,11 @@ func RestartApache() error {
 
 	// Restart Apache
 	restartErr := utils.Spinner("Restarting Apache server...", func() error {
-		cmd := exec.Command("brew", "services", "restart", "apache")
+		cmd := exec.Command("brew", "services", "restart", "httpd")
 		var out bytes.Buffer
 		cmd.Stdout = &out
 		cmd.Stderr = &out
-		return cmd.Run()
+		return utils.RunAsOriginalUser(cmd)
 	})
 
 	if restartErr != nil {
