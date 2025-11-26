@@ -250,6 +250,11 @@ DRY RUN: Would restart Apache server and flush the DNS cache.
 [INFO] You should now be able to access your new project at http://myproject.local or https://myproject.local
 ```
 
+### Manual intervention
+There are scenarios in which you may have to intervene manually to update some configurations such as:
+* open the `/opt/homebrew/etc/httpd/httpd.conf` configuration file and update the listening port to `Listen 80`
+* open the `/opt/homebrew/etc/httpd/extra/httpd-ssl.conf` configuration file and update the listening port to `Listen 443` (also, search for `8443` and replace it with `443`)
+
 ### Uninstallation
 
 You can uninstall the **LocalHost** utility from your system by following these steps:

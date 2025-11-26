@@ -8,7 +8,7 @@ import (
 	"github.com/liviu-hariton/localhost/internal/utils"
 )
 
-const Version = "1.1.0"
+const Version = "1.1.1"
 
 func main() {
 	if utils.HasFlag("--version") {

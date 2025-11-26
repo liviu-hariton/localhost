@@ -161,7 +161,7 @@ func EnablePHPModuleInHttpdConf() error {
 
 	// Add the PHP module loading line if not found
 	if !phpModuleLoaded {
-		lines = append([]string{"LoadModule php_module /usr/local/opt/php/lib/httpd/modules/libphp.so"}, lines...)
+		lines = append([]string{"LoadModule php_module /opt/homebrew/opt/php/lib/httpd/modules/libphp.so"}, lines...)
 
 		utils.LogSuccess("✔ Added PHP module loading line to httpd.conf.")
 	}
@@ -173,6 +173,24 @@ func EnablePHPModuleInHttpdConf() error {
 		lines = append(lines, "</FilesMatch>")
 
 		utils.LogSuccess("Added SetHandler directive to httpd.conf.")
+	}
+
+	// Add the index.php file to the httpd.conf in <IfModule dir_module>DirectoryIndex index.html</IfModule>
+	indexPhpAdded := false
+	for _, line := range lines {
+		if strings.Contains(line, "index.php") {
+			indexPhpAdded = true
+			break
+		}
+	}
+	if !indexPhpAdded {
+		lines = append(lines, "<IfModule dir_module>")
+		lines = append(lines, "    DirectoryIndex index.php index.html")
+		lines = append(lines, "</IfModule>")
+
+		utils.LogSuccess("Added index.php file to httpd.conf.")
+	} else {
+		utils.LogSuccess("index.php file already exists in httpd.conf.")
 	}
 
 	// Write the updated content back to httpd.conf
