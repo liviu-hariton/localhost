@@ -43,6 +43,7 @@ LocalHost is a utility for web developers to set up and manage multiple local do
     * [List available local domains](#list-available-local-domains)
     * [Remove an existing local domain](#remove-an-existing-local-domain)
     * [Dry-Run mode](#dry-run-mode)
+    * [Manual intervention](#manual-intervention)
 * [Uninstallation](#uninstallation)
 * [Build it yourself](#build-it-yourself)
 * [License](#license)
